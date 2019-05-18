@@ -94,27 +94,6 @@ def get_ratings(game):
     return white_rating, black_rating
 
 
-# def get_game_type(game):
-#     """
-#     Returns the type of a game
-#     :param game: game in .pgn format
-#     :return: string
-#     """
-#     game = game.split('/n')
-
-
-def count_shit(game):
-    """
-    Temporary function for file exploring
-    :param game: game as string from .png file
-    :return: bool
-    """
-    game = game.split('\n')
-    game = game[:game.index('') + 1]
-    normal_result = 18
-    return len(game) == normal_result
-
-
 # noinspection Pylint
 def read_games(filename, num_of_games=-1):
     """

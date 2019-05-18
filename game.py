@@ -2,7 +2,6 @@
 Course 1
 module with class to represent chess game
 """
-import re
 
 
 class Game:
@@ -15,7 +14,6 @@ class Game:
         :param moves: moves made in game
         :param result: (1, 0)-white wins; (0, 1)-black wins; (1/2-1/2)-draw
         :param ratings: ratings of players in game
-        :param game_type: type of game
         """
         self.moves = moves
         self.result = result

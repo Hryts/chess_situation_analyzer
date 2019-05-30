@@ -1,99 +1,74 @@
 """
-Realization of game tree data structure
+Module for game tree realisation
 """
+import pickle
+import gt_node
 
 
 class GameTree:
     """
-    Games tree to represent chess positions
+    Represents game tree data structure
     """
-    def __init__(self, current_move=None):
-        self.root = Root(current_move)
-        self.children = {}
 
-    def insert_child(self, key, value):
-        """
-        Inserts a child to a current root
-        :param key: move to cause child position
-        :param value: game position
-        :return None
-        """
-        if key not in self.children:
-            self.children[key] = GameTree(value)
-        self.refresh(value)
+    def __init__(self):
+        self.root = gt_node.GTNode()
 
-    def get_child(self, move):
+    def add(self, game):
         """
-        Returns child by move
-        :param move: move as a key to a dictionary to access a child
-        :return: child or -1 if there is no such a child
-        """
-        if move in self.children:
-            return self.children[move]
-        return -1
-
-    def refresh(self, child):
-        """
-        Refresh staistics for current root
-        :param child: game which result should effect statistics
+        Adds a game to a tree by changing statistics in every node on path
+        :param game: game to add
         :return: None
         """
-        self.root.stat.add_game(child.get_result(), child.get_ratings())
+        moves = game.get_moves()
+        current_node = self.root
 
+        for move in moves:
+            if move in current_node.children:
+                current_node.data.add_game(game)
+            else:
+                new_node = gt_node.GTNode(move)
+                current_node.add_child(new_node)
 
-class Root:
-    """
-    Root node for games tree
-    """
-    def __init__(self, current_move=None):
-        self.current_move = current_move
-        self.number_of_games = 0
-        self.stat = Statistics()
+            current_node = current_node.children[move]
+            current_node.data.add_game(game)
 
-    def get_cur_move(self):
+    def find_game(self, game):
         """
-        Returns move for current node
-        :return: move
+        Finds game in tree by it's moves and returns a node with it
+        :param game: game to find
+        :return: node
         """
-        return self.current_move
+        if type(game) != list:
+            moves = game.get_moves()
+        else:
+            moves = game
+        current_node = self.root
 
-    def get_stat(self):
+        for move in moves:
+            if move not in current_node.children:
+                return None
+            current_node = current_node.children[move]
+
+        return current_node
+
+    def to_file(self, file_name='games_tree.pickle', clear_tree=False):
         """
-        Returns statistics in current node
-        :return: statistics
-        """
-        return self.stat
-
-
-class Statistics:
-    """
-    Represents statistics for chess games
-    """
-    def __init__(self, games_num=0, w_victories=0, b_victories=0, med_rat=0):
-        self.games_num = games_num
-        self.w_victories = w_victories
-        self.b_victories = b_victories
-        self.med_rat = med_rat
-
-    def add_game(self, result, ratings):
-        """
-        Changes statistics by adding one game results
-        :param result: result of game
-        :param ratings: ratings of opponents
+        Saves an object to a tree
         :return: None
         """
-        self.med_rat = (sum(ratings) + self.med_rat * self.games_num) / \
-                       (self.games_num + len(ratings))
-        self.w_victories += result[0]
-        self.b_victories += result[1]
-        self.games_num += 1
+        pickle_out = open(file_name, 'wb')
+        pickle.dump(self, pickle_out)
+        pickle_out.close()
+        if clear_tree:
+            self.root = gt_node.GTNode()
 
-    def odds_for(self, w_b):
+    # noinspection Pylint
+    def from_file(self, file_name='games_tree.pickle'):
         """
-        Returns odds for white or black to win
-        :param w_b: parametr to set side to check
-        :return: odds
+        Reads tree object from a file
+        :param file_name: name of file
+        :return: object of tree
         """
-        if w_b == 'b':
-            return self.b_victories / self.games_num
-        return self.w_victories / self.games_num
+        file = open(file_name, 'rb')
+        self = pickle.load(file)
+        file.close()

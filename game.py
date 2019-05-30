@@ -16,7 +16,7 @@ class Game:
         :param ratings: ratings of players in game
         """
         self.moves = moves
-        self.result = result
+        self.result = Game.convert_result(result)
         self.ratings = ratings
 
     def __eq__(self, other):
@@ -48,3 +48,23 @@ class Game:
         :return: ratings of players
         """
         return self.ratings
+
+    def get_moves(self):
+        """
+        Returns list of moves made in game
+        :return: moves
+        """
+        return self.moves
+
+    @staticmethod
+    def convert_result(result):
+        """
+        Converts results in pgn format to a tuple of numbers
+        :param result: tuple of strings to describe result of game
+        :return: tuple of numbers
+        """
+        if result == '*':
+            return 0, 0
+        if result[0] == '1/2':
+            return 0.5, 0.5
+        return int(result[0]), int(result[1])

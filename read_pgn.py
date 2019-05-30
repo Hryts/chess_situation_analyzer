@@ -6,6 +6,27 @@ import re
 from game import Game
 
 
+# def get_game(file_name):
+#     """
+#     Generates games from file
+#     :param file_name: name of file with games
+#     :return: string with games
+#     """
+#     games = open(file_name)
+#     _game = ''
+#     # counter = 0
+#     for line in games.readline():
+#         print(line)
+#         # counter += 1
+#         _game += line
+#         # if counter >= 20:
+#         if '{' in line:
+#             # counter = 0
+#             yield _game.strip()
+#             _game = ''
+#     games.close()
+#
+
 def get_game(file_name):
     """
     Generates games from file
@@ -14,15 +35,15 @@ def get_game(file_name):
     """
     games = open(file_name)
     _game = ''
-    # counter = 0
-    for line in games.readlines():
-        # counter += 1
+    line = games.readline()
+
+    while line:
         _game += line
-        # if counter >= 20:
         if '{' in line:
-            # counter = 0
             yield _game.strip()
             _game = ''
+        line = games.readline()
+
     games.close()
 
 
@@ -39,7 +60,7 @@ def get_moves(_game):
     counter = 0
 
     for move in moves:
-        if '.' in move:
+        if '.' in move or '(' in move or ')' in move:
             moves.remove(move)
         if '{' in move:
             counter = moves.index(move)
@@ -88,11 +109,10 @@ def get_ratings(_game):
             black_rating = line
 
     rating_pattern = r'\"(.*?)\"'
-    white_rating = re.search(rating_pattern, white_rating).group()[1:-1]
-    black_rating = re.search(rating_pattern, black_rating).group()[1:-1]
+    white_rating = int(re.search(rating_pattern, white_rating).group()[1:-1])
+    black_rating = int(re.search(rating_pattern, black_rating).group()[1:-1])
 
     return white_rating, black_rating
-
 
 # def count_shit(game):
 #     """
@@ -107,6 +127,7 @@ def get_ratings(_game):
 
 
 # noinspection Pylint
+
 def read_games(filename, num_of_games=-1):
     """
     Reads given amount of games from file
@@ -125,7 +146,52 @@ def read_games(filename, num_of_games=-1):
         res.append(_game)
         if counter > num_of_games-1 and num_of_games != -1:
             return res
+
+    if len(res) == 1:
+        return res[0]
     return res
+
+
+def read_game(filename):
+    """
+    Generator of games
+    :param filename: name of file with games
+    :return: yields games one by one
+    """
+    for _game in get_game(filename):
+        moves = get_moves(_game)
+        result = get_game_result(_game)
+        ratings = get_ratings(_game)
+        _game = Game(moves, result, ratings)
+        yield _game
+
+
+def read_my_moves(filename):
+    """
+    Reads file with one unfinished game
+    :param filename: name of pgn file with game
+    :return: game
+    """
+    game_file = open(filename)
+    res = ''
+
+    for line in game_file.readlines():
+        res.join(line)
+
+    game_file.close()
+
+    moves = res.split('\n')[-1].split()
+    for _ in moves:
+        if '.' in _ or \
+           '*' in _ or \
+           '(' in _ or \
+           ')' in _ or \
+           '{' in _:
+            moves.remove(_)
+    if '*' in moves:
+        moves.remove('*')
+
+    return moves
 
 
 if __name__ == '__main__':

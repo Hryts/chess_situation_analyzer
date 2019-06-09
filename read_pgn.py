@@ -114,20 +114,8 @@ def get_ratings(_game):
 
     return white_rating, black_rating
 
-# def count_shit(game):
-#     """
-#     Temporary function for file exploring
-#     :param game: game as string from .png file
-#     :return: bool
-#     """
-#     game = game.split('\n')
-#     game = game[:game.index('') + 1]
-#     normal_result = 18
-#     return len(game) == normal_result
-
 
 # noinspection Pylint
-
 def read_games(filename, num_of_games=-1):
     """
     Reads given amount of games from file
@@ -176,17 +164,19 @@ def read_my_moves(filename):
     res = ''
 
     for line in game_file.readlines():
-        res.join(line)
+        # noinspection Pylint
+        res += line
 
     game_file.close()
 
-    moves = res.split('\n')[-1].split()
+    moves = res.strip().split('\n')[-1].split()
+    # print(res.strip().split('\n'))
     for _ in moves:
         if '.' in _ or \
-           '*' in _ or \
-           '(' in _ or \
-           ')' in _ or \
-           '{' in _:
+                '*' in _ or \
+                '(' in _ or \
+                ')' in _ or \
+                '{' in _:
             moves.remove(_)
     if '*' in moves:
         moves.remove('*')

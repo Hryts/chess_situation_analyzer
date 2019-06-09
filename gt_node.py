@@ -31,10 +31,10 @@ class GTNode:
         return 'Move:\t\t{}\n' \
                'Data:\t\t{}\n' \
                'Children:\t{}'.format(
-                self.move,
-                self.data,
-                self.children
-        )
+                   self.move,
+                   self.data,
+                   self.children
+                   )
 
 
 class Statistics:
@@ -61,10 +61,26 @@ class Statistics:
         self.b_victories += result[1]
         self.games_num += 1
 
+    def __add__(self, other):
+        """
+        Adds two objects of Statistics
+        :param other: Statistics object
+        :return: None
+        """
+        if not other.games_num:
+            return self
+        self.med_rat = (self.med_rat * self.games_num +
+                        other.med_rat * other.games_num) / \
+                       (self.games_num + other.games_num)
+        self.w_victories += other.w_victories
+        self.b_victories += other.b_victories
+        self.games_num += other.games_num
+        return self
+
     def odds_for(self, w_b):
         """
         Returns odds for white or black to win
-        :param w_b: parametr to set side to check
+        :param w_b: parameter to set side to check
         :return: odds
         """
         if w_b == 'b':
@@ -76,8 +92,8 @@ class Statistics:
                '\t\twhite victories\t{1}\n' \
                '\t\tblack victories\t{2}\n' \
                '\t\tmedium rating\t{3}'.format(
-                self.games_num,
-                self.w_victories,
-                self.b_victories,
-                self.med_rat
-        )
+                   self.games_num,
+                   self.w_victories,
+                   self.b_victories,
+                   self.med_rat
+                   )

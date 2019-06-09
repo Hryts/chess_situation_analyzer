@@ -35,17 +35,21 @@ class GameTree:
     def find_game(self, game):
         """
         Finds game in tree by it's moves and returns a node with it
-        :param game: game to find
+        :param game: game to find or moves of game to find
         :return: node
         """
+        # noinspection Pylint
         if type(game) != list:
             moves = game.get_moves()
         else:
             moves = game
+
+        print('looking for game:\t', moves)
         current_node = self.root
 
         for move in moves:
             if move not in current_node.children:
+                # print(current_node)
                 return None
             current_node = current_node.children[move]
 
@@ -62,13 +66,18 @@ class GameTree:
         if clear_tree:
             self.root = gt_node.GTNode()
 
+    @staticmethod
     # noinspection Pylint
-    def from_file(self, file_name='games_tree.pickle'):
+    def from_file(file_name='games_tree.pickle'):
         """
         Reads tree object from a file
         :param file_name: name of file
         :return: object of tree
         """
         file = open(file_name, 'rb')
-        self = pickle.load(file)
+        res = pickle.load(file)
         file.close()
+        return res
+
+    def __str__(self):
+        return '{}'.format(self.root)

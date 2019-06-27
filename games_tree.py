@@ -55,11 +55,13 @@ class GameTree:
 
         return current_node
 
-    def to_file(self, file_name='games_tree.pickle', clear_tree=False):
+    def to_file(self, file_name='games_tree.pickle',
+                clear_tree=False):
         """
         Saves an object to a tree
         :return: None
         """
+        file_name = 'pickle_games/' + file_name
         pickle_out = open(file_name, 'wb')
         pickle.dump(self, pickle_out)
         pickle_out.close()
@@ -68,12 +70,14 @@ class GameTree:
 
     @staticmethod
     # noinspection Pylint
+
     def from_file(file_name='games_tree.pickle'):
         """
         Reads tree object from a file
         :param file_name: name of file
         :return: object of tree
         """
+        file_name = 'pickle_games/' + file_name
         file = open(file_name, 'rb')
         res = pickle.load(file)
         file.close()

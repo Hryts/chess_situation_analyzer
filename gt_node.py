@@ -2,8 +2,6 @@
 Module with node for games tree
 """
 
-# import stat
-
 
 class GTNode:
     """

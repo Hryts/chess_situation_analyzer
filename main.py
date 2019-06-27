@@ -2,8 +2,13 @@
 main module
 """
 
+
+from os.path import isfile, join
+from os import listdir
+
 import sys
 import psutil
+
 import read_pgn
 import games_tree
 
@@ -42,7 +47,7 @@ def pgn_to_tree(filename, max_trees_num=-1):
         used_memory = 1 - (available_memory / TOTAL_MEMORY)
         GAMES_TREE.add(game)
         if used_memory > MAX_RAM:
-            # print(GAMES_TREE)
+            print(GAMES_TREE)
             print('RAM is {}% full'.format(MAX_RAM * 100))
             print('start saving to file no.{}'.format(counter+1))
             new_filename = 'games_tree{}.pickle'.format(counter)
@@ -88,24 +93,32 @@ def save_tree_files(new_files, filename='tree_files.txt'):
     trees_file.close()
 
 
-def get_tree_files(filename='tree_files.txt'):
+def get_tree_files(filename='pickle_games'):
     """
     Reads names of binary files with trees from a given file
     :param filename: name of file to read from
     :return: set of names of files
     """
-    res = set()
-    trees_file = open(filename)
-    for line in trees_file.readlines():
-        res.add(line.strip())
-    trees_file.close()
-    return res
+    # res = set()
+    # trees_file = open(filename)
+    # for line in trees_file.readlines():
+    #     res.add(line.strip())
+    # trees_file.close()
+    # return list(res)
+    return [f for f in listdir(filename)
+            if isfile(join(filename, f))]
 
 
 if __name__ == '__main__':
+    print('Welcome to chess situation analyzer!\n\n')
+    MY_FILENAME = input('Enter the name of pgn file with your game: ')
+
     TREE_FILES = get_tree_files()
 
     if not TREE_FILES:
+        print('No data was found. You should download some games from '
+              'https://www.ficsgames.org/ and place them into data/games '
+              'directory')
         # Convert all the pgn files into trees and save them
         for pgn_file in FILENAMES:
             pgn_to_tree(pgn_file)
